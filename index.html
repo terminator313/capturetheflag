@@ -1,78 +1,110 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CTF Platform</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind & font (your original CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+
+  <!-- inline copy of your exact colour palette -->
   <style>
-    body{font-family:Inter;background:#1a202c;color:#fff}
+    body{font-family:Inter,system-ui;background:#1a202c;color:#fff;margin:0;padding:0;box-sizing:border-box;}
+    .bg-gray-800{background:#2d3748;}
+    .bg-gray-700{background:#4a5568;}
+    .bg-gray-900{background:#1a202c;}
+    .text-purple-400{color:#a78bfa;}
+    .text-purple-300{color:#c4b5fd;}
+    .text-green-400{color:#4ade80;}
+    .border-purple-500{border-color:#8b5cf6;}
+    .btn{
+      display:inline-block;padding:.75rem 1.5rem;background:#7c3aed;color:#fff;border-radius:9999px;
+      box-shadow:0 10px 15px -3px rgba(0,0,0,.1);transition:.3s ease;cursor:pointer;
+    }
+    .btn:hover{background:#6d28d9;transform:scale(1.05);}
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
-<header class="bg-gray-900 p-4 shadow-lg">
-  <div class="container mx-auto flex justify-between items-center">
-    <h1 class="text-3xl font-bold text-purple-400">CTF Platform</h1>
-    <nav class="flex space-x-6">
-      <a href="index.html#" class="text-gray-300 hover:text-white">Dashboard</a>
-      <a href="scoreboard.html" class="text-gray-300 hover:text-white">Scoreboard</a>
-      <a href="charts.html" class="text-gray-300 hover:text-white">Charts</a>
-    </nav>
-  </div>
-</header>
-<main id="app" class="flex-grow p-8 bg-gray-800"></main>
-<footer class="bg-gray-900 text-center p-4 text-sm text-gray-400">
-  © <span id="yr"></span> CTF Platform
-</footer>
+  <!-- HEADER (same as original) -->
+  <header class="bg-gray-900 text-white p-4 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center max-w-6xl">
+      <h1 class="text-3xl font-bold text-purple-400">CTF Platform</h1>
+      <nav class="flex space-x-6">
+        <a href="#dashboard" class="text-gray-300 hover:text-white transition">Dashboard</a>
+        <a href="scoreboard.html" class="text-gray-300 hover:text-white transition">Scoreboard</a>
+        <a href="charts.html" class="text-gray-300 hover:text-white transition">Charts</a>
+      </nav>
+    </div>
+  </header>
 
-<script type="module">
-  import { loadJSON, route } from './js/common.js';
-  document.getElementById('yr').textContent=new Date().getFullYear();
+  <!-- MAIN -->
+  <main class="flex-grow p-8 bg-gray-800">
+    <div class="container mx-auto max-w-6xl">
+      <h2 class="text-4xl font-extrabold text-white mb-8 text-center">Challenge Categories</h2>
 
-  async function render(){
-    const {page}=route();
-    const box=document.getElementById('app');
-    switch(page){
-      case '':
-      case 'dashboard':
-        const ch=await loadJSON('.data/challenges.json');
-        const cats=[...new Set(ch.map(c=>c.category))];
-        box.innerHTML=`
-          <h2 class="text-4xl font-extrabold text-center mb-8">Challenge Categories</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            ${cats.map(c=>{
-              const n=ch.filter(x=>x.category===c).length;
-              return `
-              <div class="bg-gray-700 rounded-xl p-6 text-center cursor-pointer hover:scale-105 transition transform"
-                   onclick="location.href='index.html#${c}'">
-                <h3 class="text-2xl font-semibold mb-2">${c}</h3>
-                <p class="text-purple-300">${n} challenges</p>
-              </div>`;
-            }).join('')}
-          </div>`;
-        break;
-      default:
-        const [cat,id]=location.hash.slice(1).split('/');
-        if(id){location.href='challenge.html#'+id;return;}
-        const list=(await loadJSON('data/challenges.json')).filter(c=>c.category===cat);
-        box.innerHTML=`
-          <a class="btn mb-6" href="index.html#">← Back</a>
-          <h2 class="text-3xl font-bold mb-6">${cat}</h2>
-          <div class="grid gap-6">
-            ${list.map(c=>`
-              <div class="bg-gray-700 rounded-xl p-6 flex justify-between items-center">
-                <div>
-                  <h3 class="text-xl font-semibold">${c.title}</h3>
-                  <p class="text-gray-300">${c.points} pts</p>
-                </div>
-                <a href="challenge.html#${c.id}" class="btn">Solve</a>
-              </div>`).join('')}
-          </div>`;
+      <!-- cards injected here -->
+      <div id="challenge-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- spinner while loading -->
+        <div id="loading" class="col-span-full flex items-center justify-center">
+          <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+          <p class="ml-4 text-xl">Loading…</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 text-center p-4 text-sm text-gray-400">
+    © <span id="yr"></span> CTF Platform
+  </footer>
+
+  <!-- single-file loader -->
+  <script type="module">
+    const loadJSON = url => fetch(url).then(r => r.json());
+
+    async function render() {
+      const grid = document.getElementById('challenge-grid');
+      const loading = document.getElementById('loading');
+
+      try {
+        const challenges = await loadJSON('./data/challenges.json');
+        const cats = [...new Set(challenges.map(c => c.category))];
+
+        loading.remove(); // spinner gone
+
+        cats.forEach(cat => {
+          const count = challenges.filter(c => c.category === cat).length;
+          const icon =
+            cat === 'Web Exploitation' ? '🕸️' :
+            cat === 'Networking' ? '🌐' :
+            cat === 'Forensics' ? '🔬' :
+            cat === 'Mobile Exploitation' ? '📱' :
+            cat === 'Cryptography' ? '🔑' :
+            cat === 'Reverse Engineering' ? '⚙️' :
+            cat === 'Binary Exploitation' ? '💻' :
+            cat === 'Miscellaneous' ? '❓' : '🌟';
+
+          const card = document.createElement('div');
+          card.className = 'bg-gray-700 rounded-xl shadow-lg p-6 text-center cursor-pointer transform hover:scale-105 transition duration-300 border-2 border-transparent hover:border-purple-500';
+          card.innerHTML = `
+            <div class="text-5xl mb-4 text-purple-400">${icon}</div>
+            <h3 class="text-2xl font-semibold text-white mb-2">${cat}</h3>
+            <p class="text-gray-300">${count} Challenges</p>
+          `;
+          card.onclick = () => location.href = `index.html#${cat}`;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        loading.innerHTML = '<p class="text-red-400">Could not load challenges.</p>';
+        console.error(e);
+      }
     }
-  }
-  window.addEventListener('hashchange',render);
-  render();
-</script>
+
+    render();
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
