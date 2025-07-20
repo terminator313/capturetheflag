@@ -1,0 +1,11 @@
+[
+  {
+    "id": "demo-1",
+    "category": "Web Exploitation",
+    "title": "Demo SQLi",
+    "points": 100,
+    "description": "Bypass the login using SQL injection.",
+    "flag": "FLAG{SQLi_DEMO}",
+    "hint": "Try username=' OR 1=1 --"
+  }
+]
