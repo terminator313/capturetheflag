@@ -36,7 +36,7 @@
     switch(page){
       case '':
       case 'dashboard':
-        const ch=await loadJSON('data/challenges.json');
+        const ch=await loadJSON('.data/challenges.json');
         const cats=[...new Set(ch.map(c=>c.category))];
         box.innerHTML=`
           <h2 class="text-4xl font-extrabold text-center mb-8">Challenge Categories</h2>
