@@ -48,6 +48,7 @@ class UserManager {
         this.currentUser = null;
         this.updateUI();
         document.getElementById('login-modal').classList.remove('hidden');
+        switchTab('dashboard');
     }
     
     generateToken(username) {
@@ -57,15 +58,13 @@ class UserManager {
     }
     
     updateUI() {
-        const userInfo = document.getElementById('user-info');
         const usernameDisplay = document.getElementById('username-display');
         const logoutBtn = document.getElementById('logout-btn');
         
         if (this.currentUser) {
-            usernameDisplay.textContent = `${this.currentUser.username} | Score: ${this.currentUser.score}`;
+            usernameDisplay.textContent = `${this.currentUser.username} (${this.currentUser.score} pts)`;
             usernameDisplay.classList.remove('hidden');
             logoutBtn.classList.remove('hidden');
-            logoutBtn.onclick = () => this.logout();
         } else {
             usernameDisplay.classList.add('hidden');
             logoutBtn.classList.add('hidden');
