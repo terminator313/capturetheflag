@@ -7,70 +7,67 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <style>
-    body{font-family:Inter;background:#1a202c;color:#fff;margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:Inter;background:#1a202c;color:#fff;margin:0;padding:0;}
     .bg-gray-700{background:#4a5568;}
     .bg-gray-800{background:#2d3748;}
     .text-purple-400{color:#a78bfa;}
     .btn{display:inline-block;padding:.75rem 1.5rem;background:#7c3aed;color:#fff;border-radius:9999px;transition:.3s;}
     .btn:hover{background:#6d28d9;transform:scale(1.05);}
+    .tab-active{border-bottom:2px solid #a78bfa;}
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col">
+  <!-- Header -->
   <header class="bg-gray-900 p-4 shadow-lg">
-    <nav class="container mx-auto max-w-6xl flex justify-between items-center">
+    <div class="container mx-auto max-w-6xl flex justify-between items-center">
       <h1 class="text-3xl font-bold text-purple-400">CTF Platform</h1>
-      <div class="space-x-6">
-        <button onclick="route('#dashboard')" class="text-gray-300 hover:text-white">Dashboard</button>
-        <button onclick="route('#scoreboard')" class="text-gray-300 hover:text-white">Scoreboard</button>
-        <button onclick="route('#charts')" class="text-gray-300 hover:text-white">Charts</button>
-      </div>
-    </nav>
+      <nav class="flex space-x-6">
+        <button onclick="switchTab('dashboard')" class="tab text-gray-300 hover:text-white" id="tab-dashboard">Dashboard</button>
+        <button onclick="switchTab('scoreboard')" class="tab text-gray-300 hover:text-white" id="tab-scoreboard">Scoreboard</button>
+        <button onclick="switchTab('charts')" class="tab text-gray-300 hover:text-white" id="tab-charts">Charts</button>
+      </nav>
+    </div>
   </header>
 
-  <main id="app" class="flex-grow p-8 bg-gray-800">
-    <!-- content injected here -->
-  </main>
+  <!-- Main -->
+  <main id="app" class="flex-grow p-8 bg-gray-800"></main>
 
   <footer class="bg-gray-900 text-center p-4 text-sm text-gray-400">
     © <span id="yr"></span> CTF Platform
   </footer>
 
   <script type="module">
-    // static list of all categories
     const ALL_CATEGORIES = [
-      'Web Exploitation', 'Networking', 'Forensics', 'Mobile Exploitation',
-      'Cryptography', 'Reverse Engineering', 'Binary Exploitation', 'Miscellaneous'
+      'Web Exploitation','Networking','Forensics','Mobile Exploitation',
+      'Cryptography','Reverse Engineering','Binary Exploitation','Miscellaneous'
     ];
-
     const loadJSON = url => fetch(url).then(r => r.json());
 
-    async function route(hash = location.hash) {
-      const app = document.getElementById('app');
-      const [page, param] = (hash || '#dashboard').slice(1).split('/');
+    /* ---------- tabs ---------- */
+    const TABS = ['dashboard','scoreboard','charts'];
+    function switchTab(tab){
+      TABS.forEach(t=>document.getElementById('tab-'+t).classList.remove('tab-active'));
+      document.getElementById('tab-'+tab).classList.add('tab-active');
+      render(tab);
+    }
 
-      switch (page) {
-        case 'dashboard': {
-          const challenges = await loadJSON('./data/challenges.json');
-          const counts = {};
-          ALL_CATEGORIES.forEach(c => counts[c] = 0); // zero if empty
-          challenges.forEach(c => counts[c.category]++);
-          app.innerHTML = `
+    /* ---------- views ---------- */
+    async function render(tab){
+      const app=document.getElementById('app');
+      switch(tab){
+        case 'dashboard':{
+          const ch=await loadJSON('./data/challenges.json');
+          const counts={};ALL_CATEGORIES.forEach(c=>counts[c]=0);
+          ch.forEach(c=>counts[c.category]++);
+          app.innerHTML=`
             <h2 class="text-4xl font-extrabold text-center mb-8">Challenge Categories</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            ${ALL_CATEGORIES.map(cat => {
-              const icon = 
-                cat === 'Web Exploitation' ? '🕸️' :
-                cat === 'Networking' ? '🌐' :
-                cat === 'Forensics' ? '🔬' :
-                cat === 'Mobile Exploitation' ? '📱' :
-                cat === 'Cryptography' ? '🔑' :
-                cat === 'Reverse Engineering' ? '⚙️' :
-                cat === 'Binary Exploitation' ? '💻' :
-                '❓';
-              return `
+            ${ALL_CATEGORIES.map(cat=>{
+              const icon=cat==='Web Exploitation'?'🕸️':cat==='Networking'?'🌐':cat==='Forensics'?'🔬':cat==='Mobile Exploitation'?'📱':cat==='Cryptography'?'🔑':cat==='Reverse Engineering'?'⚙️':cat==='Binary Exploitation'?'💻':'❓';
+              return`
                 <div class="bg-gray-700 rounded-xl p-6 text-center cursor-pointer hover:scale-105 transition transform"
-                     onclick="route('#${cat}')">
+                     onclick="openCategory('${cat}')">
                   <div class="text-5xl mb-4 text-purple-400">${icon}</div>
                   <h3 class="text-2xl font-semibold mb-2">${cat}</h3>
                   <p class="text-gray-300">${counts[cat]} Challenges</p>
@@ -79,17 +76,14 @@
             </div>`;
           break;
         }
-
-        case 'scoreboard': {
-          const scores = JSON.parse(localStorage.getItem('scores') || '[]');
-          const players = {};
-          scores.forEach(s => {
-            if (!players[s.player]) players[s.player] = { solved: 0, points: 0 };
-            players[s.player].solved++;
-            players[s.player].points += s.pts;
+        case 'scoreboard':{
+          const scores=JSON.parse(localStorage.getItem('scores')||'[]');
+          const players={};scores.forEach(s=>{
+            if(!players[s.player])players[s.player]={solved:0,points:0};
+            players[s.player].solved++;players[s.player].points+=s.pts;
           });
-          const sorted = Object.entries(players).sort((a, b) => b[1].points - a[1].points);
-          app.innerHTML = `
+          const sorted=Object.entries(players).sort((a,b)=>b[1].points-a[1].points);
+          app.innerHTML=`
             <h2 class="text-4xl font-extrabold text-center mb-8">Scoreboard</h2>
             <div class="bg-gray-700 rounded-xl overflow-x-auto max-w-4xl mx-auto">
               <table class="w-full text-left">
@@ -111,28 +105,25 @@
             </div>`;
           break;
         }
-
-        case 'charts': {
-          const challenges = await loadJSON('./data/challenges.json');
-          const scores = JSON.parse(localStorage.getItem('scores') || '[]');
-          const totalByCat = {};
-          const solvedByCat = {};
-          ALL_CATEGORIES.forEach(c => { totalByCat[c]=0; solvedByCat[c]=0; });
-          challenges.forEach(c => totalByCat[c.category]++);
+        case 'charts':{
+          const ch=await loadJSON('./data/challenges.json');
+          const scores=JSON.parse(localStorage.getItem('scores')||'[]');
+          const totalByCat={};const solvedByCat={};
+          ALL_CATEGORIES.forEach(c=>{totalByCat[c]=0;solvedByCat[c]=0;});
+          ch.forEach(c=>totalByCat[c.category]++);
           scores.forEach(s=>{
-            const cat = challenges.find(c=>c.id===s.cid).category;
-            solvedByCat[cat]++;
+            const cat=ch.find(c=>c.id===s.cid).category;solvedByCat[cat]++;
           });
-          app.innerHTML = `
+          app.innerHTML=`
             <h2 class="text-4xl font-extrabold text-center mb-8">Statistics</h2>
             <div class="space-y-6 max-w-4xl mx-auto">
             ${ALL_CATEGORIES.map(cat=>{
-              const pct = totalByCat[cat] ? Math.round((solvedByCat[cat]||0)/totalByCat[cat]*100) : 0;
-              return `
+              const pct=totalByCat[cat] ? Math.round(solvedByCat[cat]/totalByCat[cat]*100) : 0;
+              return`
                 <div class="bg-gray-700 rounded-xl p-4">
                   <div class="flex justify-between mb-1">
                     <span class="font-semibold">${cat}</span>
-                    <span class="text-purple-300">${solvedByCat[cat]||0} / ${totalByCat[cat]}</span>
+                    <span class="text-purple-300">${solvedByCat[cat]} / ${totalByCat[cat]}</span>
                   </div>
                   <div class="w-full bg-gray-600 rounded-full h-2.5">
                     <div class="bg-purple-500 h-2.5 rounded-full" style="width:${pct}%"></div>
@@ -142,92 +133,35 @@
             </div>`;
           break;
         }
-
-        default: {
-          // category list
-          const category = page;
-          const challenges = await loadJSON('./data/challenges.json');
-          const list = challenges.filter(c => c.category === category);
-          app.innerHTML = `
-            <a class="btn mb-6" href="#" onclick="route('#dashboard')">← Back</a>
-            <h2 class="text-3xl font-bold mb-6">${category}</h2>
-            <div class="grid gap-6">
-            ${list.map(c=>{
-              const solved = JSON.parse(localStorage.getItem('scores')||'[]').some(s=>s.cid===c.id);
-              return `
-                <div class="bg-gray-700 rounded-xl p-6 flex justify-between items-center ${solved?'border-2 border-green-500':''}">
-                  <div>
-                    <h3 class="text-xl font-semibold">${c.title}</h3>
-                    <p class="text-gray-300">${c.points} pts</p>
-                  </div>
-                  <a class="btn" href="#challenge/${c.id}">Solve</a>
-                </div>`;
-            }).join('')}
-            </div>`;
-          break;
-        }
       }
     }
 
-    /* -------- challenge solve page -------- */
-    if (location.hash.startsWith('#challenge/')) {
-      const id = location.hash.split('/')[1];
-      const app = document.getElementById('app');
-      (async () => {
-        const challenges = await loadJSON('./data/challenges.json');
-        const ch = challenges.find(c=>c.id===id);
-        if (!ch) { app.innerHTML='<h1 class="text-red-400 text-center mt-20">Challenge not found</h1>'; return; }
-
-        const player = localStorage.getItem('player');
-        if (!player) {
-          app.innerHTML = `
-            <div class="min-h-screen flex items-center justify-center">
-              <div class="bg-gray-700 rounded-xl p-8 max-w-sm w-full text-center">
-                <h2 class="text-2xl font-bold mb-4">Enter Player Name</h2>
-                <input id="nick" class="w-full p-3 rounded bg-gray-900 border border-gray-600 mb-4 text-white" placeholder="Player">
-                <button class="btn w-full" onclick="localStorage.setItem('player',nick.value.trim());location.reload()">Continue</button>
-              </div>
-            </div>`;
-          return;
-        }
-
-        const solved = JSON.parse(localStorage.getItem('scores')||'[]').some(s=>s.cid===id);
-        app.innerHTML = `
-          <a class="btn mb-6" href="#" onclick="route('#' + '${ch.category}')">← Back</a>
-          <div class="bg-gray-700 rounded-xl shadow-lg p-8 max-w-3xl mx-auto">
-            <h1 class="text-3xl font-bold text-purple-400 mb-2">${ch.title}</h1>
-            <p class="mb-1"><strong>Category:</strong> ${ch.category}</p>
-            <p class="mb-4"><strong>Points:</strong> ${ch.points}</p>
-            <p class="mb-6">${ch.description}</p>
-            ${ch.hint?`<div class="bg-gray-600 rounded p-3 mb-4"><strong>Hint:</strong> ${ch.hint}</div>`:''}
-            ${solved?`
-              <div class="bg-green-700 text-white p-4 rounded-lg text-center text-xl font-semibold">
-                ✅ Challenge Already Solved!
-              </div>`:`
+    /* ---------- category drill-down ---------- */
+    window.openCategory = async function(cat){
+      const ch=await loadJSON('./data/challenges.json');
+      const list=ch.filter(c=>c.category===cat);
+      const app=document.getElementById('app');
+      app.innerHTML=`
+        <button class="btn mb-6" onclick="switchTab('dashboard')">← Back</button>
+        <h2 class="text-3xl font-bold mb-6">${cat}</h2>
+        <div class="grid gap-6">
+        ${list.map(c=>{
+          const solved=JSON.parse(localStorage.getItem('scores')||'[]').some(s=>s.cid===c.id);
+          return`
+            <div class="bg-gray-700 rounded-xl p-6 flex justify-between items-center ${solved?'border-2 border-green-500':''}">
               <div>
-                <label class="block mb-2 font-semibold">Submit Flag:</label>
-                <input id="flag" class="w-full p-3 rounded bg-gray-900 border border-gray-600 mb-4 text-white" placeholder="FLAG{...}">
-                <button class="btn w-full" onclick="submitFlag('${ch.id}',${ch.points},'${ch.flag}')">Submit</button>
-                <p id="msg" class="mt-4 text-center font-semibold"></p>
-              </div>`}
-          </div>`;
-
-        window.submitFlag = (cid,pts,correct) => {
-          const val = document.getElementById('flag').value.trim();
-          const msg = document.getElementById('msg');
-          if (val !== correct) { msg.textContent='Incorrect flag'; msg.className='text-red-400'; return; }
-          const scores = JSON.parse(localStorage.getItem('scores')||'[]');
-          scores.push({player,cid,pts,ts:Date.now()});
-          localStorage.setItem('scores',JSON.stringify(scores));
-          msg.textContent='Correct! Challenge solved 🎉'; msg.className='text-green-400';
-        };
-      })();
+                <h3 class="text-xl font-semibold">${c.title}</h3>
+                <p class="text-gray-300">${c.points} pts</p>
+              </div>
+              <a class="btn" href="./challenges/web/${c.id}.html">Solve</a>
+            </div>`;
+        }).join('')}
+        </div>`;
     }
 
-    /* hash-change listener */
-    window.addEventListener('hashchange',()=>route());
-    route(); // initial paint
-    document.getElementById('yr').textContent = new Date().getFullYear();
+    /* ---------- init ---------- */
+    switchTab('dashboard');
+    document.getElementById('yr').textContent=new Date().getFullYear();
   </script>
 </body>
 </html>
