@@ -15,6 +15,7 @@
     .btn:hover{background:#6d28d9;transform:scale(1.05);}
     .tab-active{border-bottom:2px solid #a78bfa;}
     .challenge-solved { border: 2px solid #4ade80; }
+    .tab { cursor: pointer; }
   </style>
 </head>
 
@@ -23,15 +24,17 @@
   <header class="bg-gray-900 p-4 shadow-lg">
     <div class="container mx-auto max-w-6xl flex justify-between items-center">
       <h1 class="text-3xl font-bold text-purple-400">CTF Platform</h1>
-      <div id="user-info" class="flex items-center space-x-4">
-        <span id="username-display" class="hidden"></span>
-        <button id="logout-btn" class="hidden btn bg-red-500 hover:bg-red-600">Logout</button>
+      <div class="flex items-center space-x-6">
+        <nav class="flex space-x-6">
+          <a href="#dashboard" onclick="switchTab('dashboard'); return false;" class="tab text-gray-300 hover:text-white" id="tab-dashboard">Dashboard</a>
+          <a href="#scoreboard" onclick="switchTab('scoreboard'); return false;" class="tab text-gray-300 hover:text-white" id="tab-scoreboard">Scoreboard</a>
+          <a href="#charts" onclick="switchTab('charts'); return false;" class="tab text-gray-300 hover:text-white" id="tab-charts">Charts</a>
+        </nav>
+        <div id="user-info" class="flex items-center space-x-4">
+          <span id="username-display" class="hidden font-medium"></span>
+          <button id="logout-btn" class="hidden btn bg-red-500 hover:bg-red-600 px-4 py-2 text-sm">Logout</button>
+        </div>
       </div>
-      <nav class="flex space-x-6">
-        <button onclick="switchTab('dashboard')" class="tab text-gray-300 hover:text-white" id="tab-dashboard">Dashboard</button>
-        <button onclick="switchTab('scoreboard')" class="tab text-gray-300 hover:text-white" id="tab-scoreboard">Scoreboard</button>
-        <button onclick="switchTab('charts')" class="tab text-gray-300 hover:text-white" id="tab-charts">Charts</button>
-      </nav>
     </div>
   </header>
 
@@ -48,20 +51,20 @@
   <main id="app" class="flex-grow p-8 bg-gray-800"></main>
 
   <footer class="bg-gray-900 text-center p-4 text-sm text-gray-400">
-    © <span id="yr"></span> CTF Platform Developed by Str1k3r0p
+    © <span id="yr"></span> CTF Platform
   </footer>
 
   <script src="js/user-manager.js"></script>
   <script type="module" src="js/main.js"></script>
   <script>
-  // Handle back/forward navigation
-  window.addEventListener('popstate', function(event) {
-    if (event.state && event.state.tab) {
-      switchTab(event.state.tab, false); // false means don't push to history
-    } else {
-      switchTab('dashboard', false);
-    }
-  });
-</script>
+    // Handle back/forward navigation
+    window.addEventListener('popstate', function(event) {
+      if (event.state && event.state.tab) {
+        switchTab(event.state.tab, false);
+      } else {
+        switchTab('dashboard', false);
+      }
+    });
+  </script>
 </body>
 </html>
