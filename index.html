@@ -1,54 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTF Platform</title>
-    <link rel="stylesheet" href="./css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>CTF Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:Inter;background:#1a202c;color:#fff;margin:0;padding:0;}
+    .bg-gray-700{background:#4a5568;}
+    .bg-gray-800{background:#2d3748;}
+    .text-purple-400{color:#a78bfa;}
+    .btn{display:inline-block;padding:.75rem 1.5rem;background:#7c3aed;color:#fff;border-radius:9999px;transition:.3s;}
+    .btn:hover{background:#6d28d9;transform:scale(1.05);}
+    .tab-active{border-bottom:2px solid #a78bfa;}
+    .challenge-solved { border: 2px solid #4ade80; }
+  </style>
 </head>
-<body>
-    <div id="user-info" class="user-info"></div>
-    
-    <div id="login-container" class="login-container">
-        <h2>Enter your username to continue</h2>
-        <input type="text" id="username-input" placeholder="Your username">
-        <button onclick="userManager.login(document.getElementById('username-input').value)">Login</button>
+
+<body class="min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-gray-900 p-4 shadow-lg">
+    <div class="container mx-auto max-w-6xl flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-purple-400">CTF Platform</h1>
+      <div id="user-info" class="flex items-center space-x-4">
+        <span id="username-display" class="hidden"></span>
+        <button id="logout-btn" class="hidden btn bg-red-500 hover:bg-red-600">Logout</button>
+      </div>
+      <nav class="flex space-x-6">
+        <button onclick="switchTab('dashboard')" class="tab text-gray-300 hover:text-white" id="tab-dashboard">Dashboard</button>
+        <button onclick="switchTab('scoreboard')" class="tab text-gray-300 hover:text-white" id="tab-scoreboard">Scoreboard</button>
+        <button onclick="switchTab('charts')" class="tab text-gray-300 hover:text-white" id="tab-charts">Charts</button>
+      </nav>
     </div>
+  </header>
 
-    <div class="container">
-        <div class="tabs">
-            <button class="tab-button active" onclick="openTab('home')">Home</button>
-            <button class="tab-button" onclick="openTab('challenges')">Challenges</button>
-            <button class="tab-button" onclick="openTab('scoreboard')">Scoreboard</button>
-            <button class="tab-button" onclick="openTab('charts')">Charts</button>
-        </div>
-
-        <div id="home" class="tab-content active">
-            <h1>Welcome to the CTF Platform</h1>
-            <p>Test your cybersecurity skills with our challenges!</p>
-        </div>
-
-        <div id="challenges" class="tab-content">
-            <h1>Challenges</h1>
-            <div id="challenges-container" class="challenges-grid"></div>
-        </div>
-
-        <div id="scoreboard" class="tab-content">
-            <h1>Scoreboard</h1>
-            <div id="scoreboard-content"></div>
-        </div>
-
-        <div id="charts" class="tab-content">
-            <h1>Statistics</h1>
-            <canvas id="charts-canvas" width="400" height="200"></canvas>
-        </div>
+  <!-- Login Modal -->
+  <div id="login-modal" class="fixed inset-0 bg-gray-900 bg-opacity-90 flex items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 rounded-xl p-8 max-w-md w-full">
+      <h2 class="text-2xl font-bold mb-6 text-center">Enter Player Name</h2>
+      <input id="username-input" class="w-full p-3 rounded bg-gray-700 border border-gray-600 mb-4 text-white" placeholder="Username">
+      <button onclick="userManager.login(document.getElementById('username-input').value)" class="btn w-full">Continue</button>
     </div>
+  </div>
 
-    <div id="challenge-modal" class="modal">
-        <!-- Modal content will be inserted here by JavaScript -->
-    </div>
+  <!-- Main Content -->
+  <main id="app" class="flex-grow p-8 bg-gray-800"></main>
 
-    <script src="script.js"></script>
+  <footer class="bg-gray-900 text-center p-4 text-sm text-gray-400">
+    © <span id="yr"></span> CTF Platform
+  </footer>
+
+  <script src="js/user-manager.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
