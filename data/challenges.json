@@ -1,11 +1,182 @@
 [
   {
-    "id": "demo-1",
+    "id": "owasp-1",
     "category": "Web Exploitation",
-    "title": "Demo SQLi",
+    "title": "Injection: SQLi Basic",
     "points": 100,
-    "description": "Bypass the login using SQL injection.",
-    "flag": "FLAG{SQLi_DEMO}",
-    "hint": "Try username=' OR 1=1 --"
+    "description": "Find the SQL injection vulnerability to bypass login.",
+    "flag": "FLAG{SQL_INJECTION_SUCCESS}",
+    "hint": "Try common SQL injection payloads in the username field."
+  },
+  {
+    "id": "owasp-2",
+    "category": "Web Exploitation",
+    "title": "Broken Auth: Session Hijack",
+    "points": 150,
+    "description": "Exploit a weak session management to hijack another user's session.",
+    "flag": "FLAG{SESSION_HIJACKED}",
+    "hint": "Look for predictable session IDs or insecure cookie flags."
+  },
+  {
+    "id": "owasp-3",
+    "category": "Web Exploitation",
+    "title": "XSS: Stored XSS",
+    "points": 120,
+    "description": "Inject a persistent cross-site scripting payload.",
+    "flag": "FLAG{STORED_XSS_CAUGHT}",
+    "hint": "Consider areas where user input is displayed to others, like comments or profiles."
+  },
+  {
+    "id": "owasp-4",
+    "category": "Web Exploitation",
+    "title": "Insecure Design: Logic Flaw",
+    "points": 180,
+    "description": "Discover and exploit a flaw in the application's business logic.",
+    "flag": "FLAG{LOGIC_FLAW_EXPLOITED}",
+    "hint": "Think about how the application processes orders or grants privileges."
+  },
+  {
+    "id": "owasp-5",
+    "category": "Web Exploitation",
+    "title": "Security Misconfig: Default Creds",
+    "points": 100,
+    "description": "Find a service running with default credentials.",
+    "flag": "FLAG{DEFAULT_CREDS_PWNED}",
+    "hint": "Check common services and their default usernames/passwords."
+  },
+  {
+    "id": "owasp-6",
+    "category": "Web Exploitation",
+    "title": "Vulnerable Components: Outdated Lib",
+    "points": 160,
+    "description": "Identify and exploit a vulnerability in an outdated third-party library.",
+    "flag": "FLAG{OUTDATED_LIB_BREACH}",
+    "hint": "Look for version numbers in HTTP headers or JavaScript files."
+  },
+  {
+    "id": "owasp-7",
+    "category": "Web Exploitation",
+    "title": "Ident & Auth Failures: 2FA Bypass",
+    "points": 200,
+    "description": "Bypass the Two-Factor Authentication mechanism.",
+    "flag": "FLAG{2FA_BYPASSED}",
+    "hint": "Consider race conditions or insecure API endpoints related to 2FA."
+  },
+  {
+    "id": "owasp-8",
+    "category": "Web Exploitation",
+    "title": "Software & Data Integrity: Insecure Deserialization",
+    "points": 220,
+    "description": "Exploit insecure deserialization to execute arbitrary code.",
+    "flag": "FLAG{DESERIALIZATION_RCE}",
+    "hint": "Look for serialized objects passed between client and server."
+  },
+  {
+    "id": "owasp-9",
+    "category": "Web Exploitation",
+    "title": "Security Logging & Monitoring: Insufficient Logging",
+    "points": 140,
+    "description": "Perform an action without it being logged, indicating insufficient monitoring.",
+    "flag": "FLAG{NO_LOGS_HERE}",
+    "hint": "Try to trigger errors or unusual behavior and see if they are recorded."
+  },
+  {
+    "id": "owasp-10",
+    "category": "Web Exploitation",
+    "title": "SSRF: Basic SSRF",
+    "points": 190,
+    "description": "Use Server-Side Request Forgery to access internal resources.",
+    "flag": "FLAG{SSRF_INTERNAL_ACCESS}",
+    "hint": "Look for parameters that accept URLs or file paths."
+  },
+  {
+    "id": "owasp-11",
+    "category": "Web Exploitation",
+    "title": "Injection: Command Injection",
+    "points": 170,
+    "description": "Inject OS commands into the application.",
+    "flag": "FLAG{COMMAND_INJECTED}",
+    "hint": "Think about features that interact with the underlying operating system."
+  },
+  {
+    "id": "owasp-12",
+    "category": "Web Exploitation",
+    "title": "Broken Auth: Password Reset Flaw",
+    "points": 160,
+    "description": "Exploit a flaw in the password reset functionality.",
+    "flag": "FLAG{PASSWORD_RESET_PWNED}",
+    "hint": "Check for token validity, rate limiting, or direct user ID manipulation."
+  },
+  {
+    "id": "owasp-13",
+    "category": "Web Exploitation",
+    "title": "XSS: Reflected XSS",
+    "points": 90,
+    "description": "Inject a non-persistent cross-site scripting payload.",
+    "flag": "FLAG{REFLECTED_XSS_ECHO}",
+    "hint": "Look for parameters that reflect user input directly into the page."
+  },
+  {
+    "id": "owasp-14",
+    "category": "Web Exploitation",
+    "title": "Insecure Design: IDOR",
+    "points": 130,
+    "description": "Exploit Insecure Direct Object References to access unauthorized data.",
+    "flag": "FLAG{IDOR_DATA_LEAK}",
+    "hint": "Change numerical or predictable IDs in URLs or API requests."
+  },
+  {
+    "id": "owasp-15",
+    "category": "Web Exploitation",
+    "title": "Security Misconfig: Directory Listing",
+    "points": 80,
+    "description": "Find a publicly accessible directory listing.",
+    "flag": "FLAG{DIR_LISTING_FOUND}",
+    "hint": "Try navigating to common directory names like /admin, /uploads, /backups."
+  },
+  {
+    "id": "owasp-16",
+    "category": "Web Exploitation",
+    "title": "Vulnerable Components: Dependency Confusion",
+    "points": 210,
+    "description": "Exploit a dependency confusion vulnerability.",
+    "flag": "FLAG{DEP_CONFUSION_EXPLOITED}",
+    "hint": "This is an advanced supply-chain attack. Research how it works."
+  },
+  {
+    "id": "owasp-17",
+    "category": "Web Exploitation",
+    "title": "Ident & Auth Failures: Brute Force",
+    "points": 110,
+    "description": "Brute force a weak login mechanism.",
+    "flag": "FLAG{BRUTE_FORCE_CRACKED}",
+    "hint": "Look for lack of rate limiting on login attempts."
+  },
+  {
+    "id": "owasp-18",
+    "category": "Web Exploitation",
+    "title": "Software & Data Integrity: File Upload Bypass",
+    "points": 190,
+    "description": "Bypass file upload restrictions to upload malicious files.",
+    "flag": "FLAG{UPLOAD_BYPASS_SUCCESS}",
+    "hint": "Check for MIME type checks, extension filtering, and content validation."
+  },
+  {
+    "id": "owasp-19",
+    "category": "Web Exploitation",
+    "title": "Security Logging & Monitoring: Alert Fatigue",
+    "points": 150,
+    "description": "Overwhelm the logging system to hide malicious activity.",
+    "flag": "FLAG{ALERT_FATIGUE_ACHIEVED}",
+    "hint": "Generate a large volume of benign events to obscure a malicious one."
+  },
+  {
+    "id": "owasp-20",
+    "category": "Web Exploitation",
+    "title": "SSRF: Blind SSRF",
+    "points": 230,
+    "description": "Exploit a blind SSRF vulnerability.",
+    "flag": "FLAG{BLIND_SSRF_HIT}",
+    "hint": "This requires out-of-band techniques to confirm the vulnerability."
   }
 ]
