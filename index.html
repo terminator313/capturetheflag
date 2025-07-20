@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>CTF Platform</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter;background:#1a202c;color:#fff}
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="bg-gray-900 p-4 shadow-lg">
+  <div class="container mx-auto flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-purple-400">CTF Platform</h1>
+    <nav class="flex space-x-6">
+      <a href="index.html#" class="text-gray-300 hover:text-white">Dashboard</a>
+      <a href="scoreboard.html" class="text-gray-300 hover:text-white">Scoreboard</a>
+      <a href="charts.html" class="text-gray-300 hover:text-white">Charts</a>
+    </nav>
+  </div>
+</header>
+<main id="app" class="flex-grow p-8 bg-gray-800"></main>
+<footer class="bg-gray-900 text-center p-4 text-sm text-gray-400">
+  © <span id="yr"></span> CTF Platform
+</footer>
+
+<script type="module">
+  import { loadJSON, route } from './js/common.js';
+  document.getElementById('yr').textContent=new Date().getFullYear();
+
+  async function render(){
+    const {page}=route();
+    const box=document.getElementById('app');
+    switch(page){
+      case '':
+      case 'dashboard':
+        const ch=await loadJSON('data/challenges.json');
+        const cats=[...new Set(ch.map(c=>c.category))];
+        box.innerHTML=`
+          <h2 class="text-4xl font-extrabold text-center mb-8">Challenge Categories</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            ${cats.map(c=>{
+              const n=ch.filter(x=>x.category===c).length;
+              return `
+              <div class="bg-gray-700 rounded-xl p-6 text-center cursor-pointer hover:scale-105 transition transform"
+                   onclick="location.href='index.html#${c}'">
+                <h3 class="text-2xl font-semibold mb-2">${c}</h3>
+                <p class="text-purple-300">${n} challenges</p>
+              </div>`;
+            }).join('')}
+          </div>`;
+        break;
+      default:
+        const [cat,id]=location.hash.slice(1).split('/');
+        if(id){location.href='challenge.html#'+id;return;}
+        const list=(await loadJSON('data/challenges.json')).filter(c=>c.category===cat);
+        box.innerHTML=`
+          <a class="btn mb-6" href="index.html#">← Back</a>
+          <h2 class="text-3xl font-bold mb-6">${cat}</h2>
+          <div class="grid gap-6">
+            ${list.map(c=>`
+              <div class="bg-gray-700 rounded-xl p-6 flex justify-between items-center">
+                <div>
+                  <h3 class="text-xl font-semibold">${c.title}</h3>
+                  <p class="text-gray-300">${c.points} pts</p>
+                </div>
+                <a href="challenge.html#${c.id}" class="btn">Solve</a>
+              </div>`).join('')}
+          </div>`;
+    }
+  }
+  window.addEventListener('hashchange',render);
+  render();
+</script>
+</body>
+</html>
