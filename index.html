@@ -48,10 +48,20 @@
   <main id="app" class="flex-grow p-8 bg-gray-800"></main>
 
   <footer class="bg-gray-900 text-center p-4 text-sm text-gray-400">
-    © <span id="yr"></span> CTF Platform
+    © <span id="yr"></span> CTF Platform Developed by Str1k3r0p
   </footer>
 
   <script src="js/user-manager.js"></script>
   <script type="module" src="js/main.js"></script>
+  <script>
+  // Handle back/forward navigation
+  window.addEventListener('popstate', function(event) {
+    if (event.state && event.state.tab) {
+      switchTab(event.state.tab, false); // false means don't push to history
+    } else {
+      switchTab('dashboard', false);
+    }
+  });
+</script>
 </body>
 </html>
